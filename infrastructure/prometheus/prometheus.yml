@@ -1,0 +1,34 @@
+# ---------------------------------------------------------------------------
+# Prometheus scrape configuration for the optional observability profile.
+#
+#   docker compose --profile observability up -d
+# ---------------------------------------------------------------------------
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    application: docutrust
+
+scrape_configs:
+  - job_name: docutrust-backend
+    # Spring Boot Actuator exposes the Prometheus registry here.
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['backend:8080']
+        labels:
+          service: backend
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+# ---------------------------------------------------------------------------
+# Metric naming note
+#
+# Application metrics deliberately carry only low-cardinality labels. Filenames
+# and document identifiers are never used as label values: they would both
+# explode series cardinality and leak potentially confidential document names
+# into the metrics backend, which is typically far less access-controlled than
+# the application database.
+# ---------------------------------------------------------------------------

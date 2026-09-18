@@ -1,0 +1,13 @@
+# Build output and local state must never enter the build context.
+target/
+.data/
+pki-local/
+*.log
+
+# Key material, in case any is ever present locally.
+*.p12
+*.pfx
+*.jks
+*.key
+*.pem
+.env

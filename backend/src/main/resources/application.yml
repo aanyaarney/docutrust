@@ -1,0 +1,174 @@
+# ---------------------------------------------------------------------------
+# DocuTrust backend configuration
+#
+# Default profile: `local` - H2 plus filesystem storage, so the application
+# runs with no Docker and no external services. The `docker` profile switches
+# to PostgreSQL and MinIO.
+#
+# No secret has a usable default. Anything sensitive comes from the
+# environment; see .env.example.
+# ---------------------------------------------------------------------------
+
+spring:
+  application:
+    name: docutrust
+
+  profiles:
+    default: local
+
+  servlet:
+    multipart:
+      # Hard ceiling enforced by the container, before any application code
+      # runs. The application-level limit in docutrust.upload is checked too;
+      # this one stops a huge body being buffered at all.
+      max-file-size: ${DOCUTRUST_MAX_UPLOAD_SIZE_MB:25}MB
+      max-request-size: ${DOCUTRUST_MAX_UPLOAD_SIZE_MB:25}MB
+
+  jpa:
+    # Schema is owned by Flyway. Hibernate validates against it and never
+    # generates or alters it - a generated schema is an untested schema.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Deliberately narrow. Actuator can expose configuration, environment
+        # variables and heap dumps; only health, info and metrics are opened.
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: docutrust
+
+logging:
+  level:
+    root: INFO
+    com.docutrust: INFO
+    # Hibernate SQL stays off: parameter logging can echo document metadata.
+    org.hibernate.SQL: WARN
+
+# --------------------------- Application settings --------------------------
+docutrust:
+  upload:
+    max-size-mb: ${DOCUTRUST_MAX_UPLOAD_SIZE_MB:25}
+    # Only PDFs. Checked by magic bytes, not by the client-supplied MIME type.
+    allowed-content-types:
+      - application/pdf
+
+  jwt:
+    # No default. The application refuses to start without this outside `local`.
+    secret: ${DOCUTRUST_JWT_SECRET:}
+    ttl-minutes: ${DOCUTRUST_JWT_TTL_MINUTES:60}
+    issuer: docutrust
+
+  signing:
+    provider: ${DOCUTRUST_SIGNING_PROVIDER:pkcs12}
+    pkcs12-path: ${DOCUTRUST_PKCS12_PATH:}
+    pkcs12-password: ${DOCUTRUST_PKCS12_PASSWORD:}
+    pkcs12-alias: ${DOCUTRUST_PKCS12_ALIAS:}
+
+  trust:
+    truststore-path: ${DOCUTRUST_TRUSTSTORE_PATH:}
+    truststore-password: ${DOCUTRUST_TRUSTSTORE_PASSWORD:}
+
+  timestamp:
+    # Disabled unless a real RFC 3161 authority is reachable. When disabled,
+    # timestamp status is reported NOT_AVAILABLE - never fabricated.
+    enabled: ${DOCUTRUST_TSA_ENABLED:false}
+    url: ${DOCUTRUST_TSA_URL:}
+
+  revocation:
+    # When disabled, revocation status is NOT_CHECKED - never GOOD.
+    enabled: ${DOCUTRUST_REVOCATION_ENABLED:false}
+    timeout-seconds: ${DOCUTRUST_REVOCATION_TIMEOUT_SECONDS:10}
+
+  storage:
+    backend: filesystem
+    filesystem-root: ./.data/documents
+
+  # Rate limits. Generous enough to be invisible in ordinary use, tight enough
+  # that credential stuffing and CPU exhaustion stop being free.
+  #
+  # In-memory and therefore per-instance: across several instances the effective
+  # limit multiplies by the instance count. A shared store or an edge-level
+  # limit is required before horizontal scaling.
+  rate-limit:
+    enabled: ${DOCUTRUST_RATE_LIMIT_ENABLED:true}
+    login-per-minute: ${DOCUTRUST_RATE_LIMIT_LOGIN_PER_MINUTE:10}
+    login-burst: ${DOCUTRUST_RATE_LIMIT_LOGIN_BURST:10}
+    expensive-per-minute: ${DOCUTRUST_RATE_LIMIT_EXPENSIVE_PER_MINUTE:30}
+    expensive-burst: ${DOCUTRUST_RATE_LIMIT_EXPENSIVE_BURST:15}
+
+  cors:
+    allowed-origins: http://localhost:5173
+
+---
+# =========================== local (default) ===============================
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    # In-memory H2 in PostgreSQL compatibility mode, so the same Flyway
+    # migrations run here as against the real database.
+    url: jdbc:h2:mem:docutrust;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+docutrust:
+  storage:
+    backend: filesystem
+  demo:
+    # Seeds demonstration accounts. Credentials come from the environment,
+    # never from source. Only ever active under this profile.
+    seed-enabled: true
+    user-email: ${DOCUTRUST_DEMO_USER_EMAIL:demo@docutrust.local}
+    user-password: ${DOCUTRUST_DEMO_USER_PASSWORD:}
+    admin-email: ${DOCUTRUST_DEMO_ADMIN_EMAIL:admin@docutrust.local}
+    admin-password: ${DOCUTRUST_DEMO_ADMIN_PASSWORD:}
+
+---
+# ============================== docker =====================================
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:postgres}:${POSTGRES_PORT:5432}/${POSTGRES_DB:docutrust}
+    username: ${POSTGRES_USER:docutrust}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+docutrust:
+  storage:
+    backend: minio
+    minio:
+      endpoint: http://${MINIO_HOST:minio}:${MINIO_API_PORT:9000}
+      access-key: ${MINIO_ROOT_USER}
+      secret-key: ${MINIO_ROOT_PASSWORD}
+      bucket: ${MINIO_BUCKET:docutrust-documents}
+  demo:
+    seed-enabled: false

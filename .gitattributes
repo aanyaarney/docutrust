@@ -1,0 +1,25 @@
+# Normalise line endings so the repository is consistent regardless of the
+# platform a contributor works on. Without this, a Windows checkout commits
+# CRLF and every file looks modified to someone on Linux or macOS.
+
+# Let Git decide for text files, storing LF in the repository.
+* text=auto
+
+# Files that must keep LF even on Windows, because the tools that consume them
+# reject or mis-parse CRLF.
+*.sh        text eol=lf
+Makefile    text eol=lf
+Dockerfile  text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+# PowerShell scripts are Windows-facing and keep CRLF.
+*.ps1       text eol=crlf
+
+# Binary files must never be touched.
+*.pdf       binary
+*.png       binary
+*.jpg       binary
+*.jar       binary
+*.p12       binary
+*.pfx       binary
