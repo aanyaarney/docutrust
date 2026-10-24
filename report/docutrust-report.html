@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DocuTrust — Mini Project Report</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 14mm 15mm; }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "Segoe UI", "Calibri", Arial, sans-serif;
+    font-size: 9.9pt;
+    line-height: 1.42;
+    color: #14181f;
+    margin: 0;
+  }
+
+  h1, h2, h3 { margin: 0; }
+
+  .page { }
+  .newpage { page-break-before: always; }
+
+  /* ------------------------------- cover ------------------------------- */
+  .cover-band {
+    background: linear-gradient(120deg, #0b2a5b 0%, #164a8f 55%, #1565a8 100%);
+    color: #fff;
+    padding: 22px 22px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+  }
+  .cover-band .kicker {
+    font-size: 9.5pt; letter-spacing: .22em; text-transform: uppercase;
+    opacity: .85; margin-bottom: 8px;
+  }
+  .cover-band h1 { font-size: 27pt; font-weight: 700; letter-spacing: -.5px; }
+  .cover-band .sub { font-size: 12pt; margin-top: 8px; opacity: .93; }
+  .cover-band .tag {
+    margin-top: 14px; font-size: 9.5pt; font-style: italic;
+    border-top: 1px solid rgba(255,255,255,.3); padding-top: 10px;
+  }
+
+  table.meta { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  table.meta td { padding: 7px 8px; border-bottom: 1px solid #d5dbe4; font-size: 10pt; }
+  table.meta td.label { width: 32%; font-weight: 600; color: #4a5568; }
+  .fill { display: inline-block; min-width: 55%; border-bottom: 1px dotted #8b95a5; }
+
+  /* ------------------------------ sections ----------------------------- */
+  .sec { margin-bottom: 10px; }
+  .sec > h2 { break-after: avoid; }
+  .card, .callout, .verdict, .flow, .shot { break-inside: avoid; }
+  table.data tr { break-inside: avoid; }
+  .sec > h2 {
+    font-size: 12pt; font-weight: 700; color: #fff;
+    padding: 7px 11px; border-radius: 4px 4px 0 0;
+    display: flex; align-items: baseline; gap: 9px;
+  }
+  .sec > .body {
+    border: 1px solid #dde2e9; border-top: none;
+    border-radius: 0 0 4px 4px; padding: 9px 11px;
+    background: #fff;
+  }
+  .num {
+    display: inline-block; background: rgba(255,255,255,.22);
+    border-radius: 3px; padding: 0 7px; font-size: 10.5pt;
+  }
+
+  .c1  > h2 { background: #b03a48; }   .c1  > .body { background: #fdf5f6; }
+  .c2  > h2 { background: #1f7a4d; }   .c2  > .body { background: #f3faf6; }
+  .c3  > h2 { background: #b3711a; }   .c3  > .body { background: #fdf8ef; }
+  .c4  > h2 { background: #6b3fa0; }   .c4  > .body { background: #f8f5fc; }
+  .c5  > h2 { background: #17558c; }   .c5  > .body { background: #f2f7fc; }
+  .c6  > h2 { background: #a03a6e; }   .c6  > .body { background: #fdf4f9; }
+  .c7  > h2 { background: #16736d; }   .c7  > .body { background: #f1faf9; }
+
+  h3 { font-size: 10pt; margin: 9px 0 4px; color: #17325c; }
+  h3:first-child { margin-top: 0; }
+
+  p { margin: 0 0 5px; }
+  ul, ol { margin: 0 0 7px; padding-left: 19px; }
+  li { margin-bottom: 3px; }
+
+  table.data { width: 100%; border-collapse: collapse; font-size: 8.9pt; margin: 6px 0; }
+  table.data th {
+    background: #eef2f7; text-align: left; padding: 6px 8px;
+    border: 1px solid #ccd4e0; font-weight: 600;
+    color: #22314d;
+  }
+  table.data td { padding: 5px 8px; border: 1px solid #d8dee8; vertical-align: top; }
+  table.data tr:nth-child(even) td { background: #fafbfd; }
+
+  code, .mono {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 9pt; background: #eef1f6; padding: 1px 4px; border-radius: 3px;
+  }
+  pre {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 8.6pt; line-height: 1.42;
+    background: #10151f; color: #dbe3ef;
+    padding: 10px 12px; border-radius: 4px; margin: 7px 0;
+    white-space: pre; overflow: hidden;
+  }
+  pre.light {
+    background: #f5f7fa; color: #1d2633; border: 1px solid #dde3ec;
+  }
+
+  .callout {
+    border-left: 4px solid #17558c; background: #eef4fb;
+    padding: 8px 11px; margin: 8px 0; font-size: 9.8pt;
+  }
+  .callout.warn { border-left-color: #b3711a; background: #fdf7ec; }
+  .callout.ok   { border-left-color: #1f7a4d; background: #eff8f3; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; }
+
+  .card {
+    border: 1px solid #dde2e9; border-radius: 4px; padding: 9px 11px;
+    background: #fff; font-size: 9.6pt;
+  }
+  .card .t { font-weight: 700; color: #17325c; margin-bottom: 4px; font-size: 10pt; }
+
+  /* pipeline */
+  .flow { display: flex; align-items: stretch; gap: 5px; margin: 9px 0; }
+  .flow .step {
+    flex: 1; text-align: center; border-radius: 4px; padding: 8px 5px;
+    font-size: 8.6pt; line-height: 1.32; border: 1px solid #cdd6e3;
+  }
+  .flow .step b { display: block; font-size: 9.2pt; margin-bottom: 2px; }
+  .flow .arrow { align-self: center; color: #8894a8; font-size: 12pt; }
+
+  .s1 { background: #eef3fa; } .s2 { background: #eaf6ef; }
+  .s3 { background: #fdf4e7; } .s4 { background: #f7effb; }
+  .s5 { background: #eaf6f5; }
+
+  .verdict { display: flex; gap: 8px; margin: 9px 0; }
+  .verdict div { flex: 1; padding: 8px 10px; border-radius: 4px; font-size: 9.4pt; }
+  .v-green { background: #e7f5ec; border-left: 4px solid #1b873f; }
+  .v-amber { background: #fdf3e3; border-left: 4px solid #b26a00; }
+  .v-red   { background: #fdeded; border-left: 4px solid #c62828; }
+
+  .shot {
+    border: 1px dashed #aab4c4; border-radius: 4px; background: #f7f9fc;
+    padding: 20px 10px; text-align: center; color: #66738a; font-size: 9pt;
+  }
+  .shot .cap {
+    display: block; margin-top: 5px; font-weight: 600; color: #3d4a5e;
+  }
+
+
+  .ref { font-size: 9.4pt; margin-bottom: 6px; padding-left: 22px; text-indent: -22px; }
+</style>
+</head>
+<body>
+
+<!-- =========================== PAGE 1 : COVER =========================== -->
+<section class="page">
+  <div class="cover-band">
+    <div class="kicker">Mini Project — Cryptography · Ideas Today, Secure Tomorrow</div>
+    <h1>DocuTrust</h1>
+    <div class="sub">Digital Signature, Document Integrity &amp; Tamper Detection Platform</div>
+    <div class="tag">“DocuTrust does not trust a document because it looks genuine.
+      It cryptographically proves whether the signed content <em>is</em> genuine.”</div>
+  </div>
+
+  <table class="meta">
+    <tr><td class="label">Project Title</td><td>DocuTrust — Digital Signature, Document Integrity and Tamper Detection Platform</td></tr>
+    <tr><td class="label">Student Name(s)</td><td><span class="fill">&nbsp;</span></td></tr>
+    <tr><td class="label">Roll No(s)</td><td><span class="fill">&nbsp;</span></td></tr>
+    <tr><td class="label">Class / Division</td><td><span class="fill">&nbsp;</span></td></tr>
+    <tr><td class="label">Faculty Guide</td><td><span class="fill">&nbsp;</span></td></tr>
+    <tr><td class="label">Department</td><td><span class="fill">&nbsp;</span></td></tr>
+    <tr><td class="label">Institute</td><td><span class="fill">&nbsp;</span></td></tr>
+    <tr><td class="label">Academic Year</td><td>2026 – 27</td></tr>
+    <tr><td class="label">Repository</td><td class="mono">github.com/aanyaarney/docutrust</td></tr>
+  </table>
+
+  <div class="sec c1">
+    <h2><span class="num">1</span> Problem Statement</h2>
+    <div class="body">
+      <h3>What security problem is being addressed?</h3>
+      <p>A PDF document carries no inherent evidence of its own authenticity. Any person who
+        obtains a contract, offer letter or certificate can open it in an editor, change a
+        figure, and redistribute it. The altered file opens normally in every reader and is
+        visually indistinguishable from the original — appearing genuine is the entire
+        objective of a forgery.</p>
+      <p>Conventional safeguards do not solve this. Email headers can be spoofed, a scanned
+        handwritten signature is simply an image that can be copied, and a password only
+        restricts who may open a file rather than proving what it contains.</p>
+
+      <h3>Why is it important?</h3>
+      <ul>
+        <li><b>Financial exposure.</b> A single altered digit in a salary, invoice or loan
+          amount has direct monetary consequence.</li>
+        <li><b>Legal admissibility.</b> Electronic records must be shown to be unaltered before
+          they carry evidentiary weight.</li>
+        <li><b>Repudiation.</b> Without cryptographic binding a signatory can credibly deny
+          having approved a document.</li>
+        <li><b>Scale.</b> Organisations exchange documents in volumes that make manual
+          verification impossible.</li>
+      </ul>
+
+      <h3>What are the real-world applications?</h3>
+      <p>Employment contracts, financial statements, academic transcripts, medical records,
+        government notifications, tender documents and software release notes — any artefact
+        whose integrity and origin must be demonstrable to a third party.</p>
+
+      <div class="callout">
+        <b>The core question this project answers:</b> given only a PDF file and nothing else,
+        can a receiver prove that its contents have not changed since a specific,
+        identified party approved them?
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ================== PAGE 2 : OBJECTIVES + CONCEPT ===================== -->
+<section class="page">
+  <div class="sec c2">
+    <h2><span class="num">2</span> Objectives</h2>
+    <div class="body">
+      <table class="data">
+        <tr><th style="width:7%">#</th><th style="width:30%">Objective</th><th>Description and success criterion</th></tr>
+        <tr>
+          <td><b>1</b></td><td><b>Apply genuine digital signatures</b></td>
+          <td>Embed a standards-conformant PAdES Baseline-B signature inside the PDF itself, so the
+            signed file is verifiable by any conformant validator and not only by this system.
+            <i>Criterion:</i> the signed PDF carries a CMS SignedData structure with a valid
+            <code>/ByteRange</code>.</td>
+        </tr>
+        <tr>
+          <td><b>2</b></td><td><b>Detect post-signature modification</b></td>
+          <td>Prove alteration cryptographically by recomputing the digest over the protected byte
+            range rather than by comparison against a stored copy.
+            <i>Criterion:</i> a single-character edit to a signed document is reported as tampering.</td>
+        </tr>
+        <tr>
+          <td><b>3</b></td><td><b>Evaluate signer identity and trust</b></td>
+          <td>Parse the X.509 certificate, validate its period and key usage, and build a
+            certification path to an externally configured trust anchor.
+            <i>Criterion:</i> a self-signed signer is reported as untrusted, not as valid.</td>
+        </tr>
+        <tr>
+          <td><b>4</b></td><td><b>Report uncertainty honestly</b></td>
+          <td>Where a property cannot be established, state that explicitly instead of defaulting
+            to a passing status.
+            <i>Criterion:</i> with no timestamp authority configured, timestamp status reads
+            <code>NOT_AVAILABLE</code> and never <code>VALID</code>.</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec c3">
+    <h2><span class="num">3</span> Cryptographic Concept</h2>
+    <div class="body">
+      <table class="data">
+        <tr>
+          <td style="width:26%"><b>Algorithm / Protocol</b></td>
+          <td>SHA-256 (FIPS 180-4) · RSA-2048 signature, <code>SHA256withRSA</code> (PKCS #1 v1.5)
+            · CMS SignedData (RFC 5652) · PAdES Baseline-B (ETSI EN 319 142) ·
+            X.509 v3 certificates with PKIX path validation (RFC 5280)</td>
+        </tr>
+        <tr>
+          <td><b>Type</b></td>
+          <td><b>Asymmetric</b> (RSA — signature generation and verification) combined with
+            <b>Hash</b> (SHA-256 — message digest). <u>No symmetric encryption is used</u>, because
+            the objective is authenticity rather than secrecy.</td>
+        </tr>
+        <tr>
+          <td><b>Key / Parameters</b></td>
+          <td>RSA modulus <span class="mono">n</span> = 2048 bits; public exponent
+            <span class="mono">e</span> = 65537; digest SHA-256 (256-bit output);
+            three-tier certificate hierarchy (Root CA → Issuing CA → Signer);
+            key material held in a PKCS #12 keystore; ECDSA P-256 also supported.</td>
+        </tr>
+        <tr>
+          <td><b>Security Properties</b></td>
+          <td>
+            <b>Integrity</b> — any change to protected bytes is detected.<br>
+            <b>Authentication</b> — the signature identifies the certificate, and hence the signer.<br>
+            <b>Non-repudiation</b> — the <code>nonRepudiation</code> key usage is asserted; the
+            signer cannot plausibly deny an act only their private key could perform.<br>
+            <b>Confidentiality — deliberately NOT provided.</b> A signed document remains fully
+            readable. Signing and encryption solve different problems, and conflating them is a
+            common misconception.
+          </td>
+        </tr>
+      </table>
+
+      <h3>Why hashing alone is insufficient</h3>
+      <p>A digest proves a file is unchanged only relative to a digest already known to be
+        trustworthy. An adversary able to alter the document can normally alter a published
+        digest alongside it and recompute it to match, because computing SHA-256 requires no
+        secret. A signature introduces a value that only one party can produce.</p>
+
+      <pre class="light">Signing                                  Verification
+-------                                  ------------
+document                                 document
+   |  SHA-256                               |  SHA-256 (recomputed)
+   v                                        v
+digest  --- sign with PRIVATE key --->  check with PUBLIC key
+                                            |
+                                            v
+                                      VALID / INVALID</pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ PAGE 3 : APPLICATIONS + ARCHITECTURE ==================== -->
+<section class="page">
+  <div class="sec c4">
+    <h2><span class="num">4</span> Real-World Applications</h2>
+    <div class="body">
+      <div class="grid3">
+        <div class="card"><div class="t">Employment &amp; HR</div>
+          Offer letters, contracts and relieving letters, where an altered salary or date has
+          immediate financial effect.</div>
+        <div class="card"><div class="t">Banking &amp; Finance</div>
+          Loan agreements, statements and audited accounts requiring demonstrable integrity.</div>
+        <div class="card"><div class="t">Government &amp; Legal</div>
+          Notifications, tender documents and affidavits where authenticity must survive
+          challenge.</div>
+        <div class="card"><div class="t">Academic Records</div>
+          Transcripts and degree certificates — a frequent target of forgery.</div>
+        <div class="card"><div class="t">Healthcare</div>
+          Prescriptions, test reports and consent forms, where alteration carries clinical risk.</div>
+        <div class="card"><div class="t">Software Supply Chain</div>
+          Release artefacts and manifests, protecting against substitution in transit.</div>
+      </div>
+
+      <h3>Standards context</h3>
+      <p>The construction used here is the same one underlying the EU eIDAS regulation, Adobe
+        Approved Trust List signatures, and India's Information Technology Act provisions for
+        digital signatures. This project implements the technical mechanism; legally recognised
+        operation additionally requires a licensed certifying authority.</p>
+    </div>
+  </div>
+
+  <div class="sec c5">
+    <h2><span class="num">5</span> System Architecture / Design</h2>
+    <div class="body">
+      <pre>  React + TypeScript Frontend
+              |  REST over HTTPS, JWT bearer authentication
+              v
+      Spring Boot Backend  (modular monolith)
+              |
+   +----------+-----------+------------+------------+
+   |          |           |            |            |
+Document   Signature  Verification  Certificate   Audit
+ Module     Module      Module        Module      Module
+   |          |           |            |            |
+   |     SigningProvider  |      TrustAnchorProvider|
+   |      (interface)     |       RevocationService |
+   |          |           |            |            |
+   |   Pkcs12SigningProvider          PKIX path validation
+   |   [SoftHSM / Cloud KMS - future]
+   |                      |
+   +----------+-----------+------------+------------+
+              |                        |
+      PostgreSQL / H2            Object Storage
+      metadata, versions,        original + signed
+      hash-chained audit         PDF bytes</pre>
+
+      <h3>Verification pipeline</h3>
+      <p>A submitted PDF is decomposed and subjected to six checks which are evaluated and
+        reported <b>independently</b>. This separation is a deliberate design decision: a tampered
+        document typically exhibits a failed integrity check together with a perfectly valid
+        certificate, and reporting the certificate as invalid in that situation would be both
+        incorrect and actively misleading.</p>
+
+      <pre class="light">Signed PDF
+    |
+    +--> Signature parser (extract /ByteRange and CMS structure)
+         |
+         +--> 1. Document integrity   digest recomputed over signed bytes
+         +--> 2. Signature validity   CMS verified with signer's public key
+         +--> 3. Certificate status   validity period, key usage, parsing
+         +--> 4. Certificate chain    PKIX path to a configured trust anchor
+         +--> 5. Revocation status    OCSP / CRL  (reports NOT_CHECKED)
+         +--> 6. Timestamp status     RFC 3161    (reports NOT_AVAILABLE)
+                    |
+                    v
+            Verdict composition  -->  Verification Report</pre>
+
+      <h3>Three-state verdict model</h3>
+      <div class="verdict">
+        <div class="v-green"><b>VALID</b><br>Signature verifies, content unchanged, chain reaches
+          a configured trust anchor.</div>
+        <div class="v-amber"><b>VALID_UNTRUSTED</b><br>Cryptography is sound and content is
+          unchanged, but the signer chains to no trusted authority.</div>
+        <div class="v-red"><b>TAMPERED / INVALID</b><br>Protected content changed, or the
+          signature fails verification.</div>
+      </div>
+      <p>The intermediate state exists because a well-formed self-signed signature is
+        mathematically flawless while proving no identity whatsoever. Classifying it as valid
+        would mislead; classifying it as invalid would be factually wrong.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============== PAGE 4 : METHODOLOGY + TECH STACK ===================== -->
+<section class="page">
+  <div class="sec c6">
+    <h2><span class="num">6</span> Methodology / Workflow</h2>
+    <div class="body">
+      <div class="flow">
+        <div class="step s1"><b>Step 1</b>Requirement analysis &amp; threat modelling (STRIDE)</div>
+        <div class="arrow">→</div>
+        <div class="step s2"><b>Step 2</b>PKI generation: Root CA, Issuing CA, signer certificate</div>
+        <div class="arrow">→</div>
+        <div class="step s3"><b>Step 3</b>Document hashing &amp; PAdES signature application</div>
+        <div class="arrow">→</div>
+        <div class="step s4"><b>Step 4</b>Multi-stage verification &amp; tamper classification</div>
+        <div class="arrow">→</div>
+        <div class="step s5"><b>Step 5</b>Adversarial testing &amp; result analysis</div>
+      </div>
+
+      <h3>Step 1 — Requirement analysis and threat modelling</h3>
+      <p>A STRIDE analysis was performed before implementation, enumerating spoofing, tampering,
+        repudiation, information disclosure, denial of service and elevation of privilege. Each
+        identified threat was paired with a mitigation and, critically, with the residual risk
+        that remains after that mitigation.</p>
+
+      <h3>Step 2 — Key and certificate generation</h3>
+      <p>A three-tier PKI is generated using Bouncy Castle. RSA key pairs are produced from
+        <code>SecureRandom</code>. The Root CA is self-signed; it issues an Issuing CA, which in
+        turn issues the end-entity signer certificate with <code>digitalSignature</code> and
+        <code>nonRepudiation</code> key usage and the RFC 9336 document-signing extended key
+        usage. Certificate serial numbers are 160-bit random values rather than a counter, so
+        issuance volume is not leaked and independent generators cannot collide.</p>
+
+      <h3>Step 3 — Hashing and signature application</h3>
+      <p>The uploaded PDF is validated by magic bytes and a structural parse, then digested with
+        SHA-256 using a streaming implementation. Signing performs a PDF <i>incremental update</i>:
+        a signature dictionary is appended with a reserved <code>/Contents</code> region, and a
+        <code>/ByteRange</code> declaring the two spans of the file that surround it. The digest is
+        computed over those spans, signed, and the resulting CMS structure written into the
+        reserved gap.</p>
+
+      <h3>Step 4 — Verification and classification</h3>
+      <p>Verification recomputes the digest over the declared byte range and compares it with the
+        <code>messageDigest</code> attribute sealed inside the signature, then verifies the
+        signature itself against the signer's public key. Findings are classified and explicitly
+        labelled as either <b>cryptographically proven</b> or <b>best-effort structural
+        observation</b>.</p>
+
+      <h3>Step 5 — Adversarial testing</h3>
+      <p>Twelve attack scenarios construct genuinely hostile artefacts and submit them through the
+        same code path used by the production interface. No result is asserted that the engine
+        does not actually produce.</p>
+    </div>
+  </div>
+
+  <div class="sec c7">
+    <h2><span class="num">7</span> Technology Stack</h2>
+    <div class="body">
+      <table class="data">
+        <tr><th style="width:22%">Category</th><th style="width:30%">Technology</th><th>Purpose and justification</th></tr>
+        <tr><td><b>Language</b></td><td>Java 21 (LTS)</td>
+          <td>Mature cryptographic ecosystem; JCA provides vetted primitives.</td></tr>
+        <tr><td><b>Backend framework</b></td><td>Spring Boot 3.5.3</td>
+          <td>Dependency injection, security filters, transaction management.</td></tr>
+        <tr><td><b>Cryptography library</b></td><td>Bouncy Castle 1.80</td>
+          <td>CMS SignedData construction and verification, ASN.1 encoding, X.509 generation.</td></tr>
+        <tr><td><b>PDF library</b></td><td>Apache PDFBox 3.0.7</td>
+          <td>PDF parsing and incremental-update signing mechanics.</td></tr>
+        <tr><td><b>Frontend</b></td><td>React 19, TypeScript, Vite 7, Material UI 7</td>
+          <td>Type-safe interface; status unions typed as literals so an unverified state cannot be
+            rendered as a passing one.</td></tr>
+        <tr><td><b>Database</b></td><td>PostgreSQL (H2 for development), Flyway</td>
+          <td>Relational integrity for the audit chain; schema owned by reviewed migrations.</td></tr>
+        <tr><td><b>Testing</b></td><td>JUnit 5, AssertJ, Vitest</td>
+          <td>Unit, integration and adversarial security testing.</td></tr>
+        <tr><td><b>Tooling</b></td><td>Maven, Docker, GitHub Actions, IntelliJ / VS Code</td>
+          <td>Build, containerisation and continuous integration.</td></tr>
+        <tr><td><b>Hardware</b></td><td>Standard PC — Windows 11, x86-64</td>
+          <td>No specialised hardware required; HSM support is an architectural extension point.</td></tr>
+      </table>
+
+      <div class="callout warn">
+        <b>Design principle — no custom cryptography.</b> RSA, ECDSA, SHA-256, ASN.1 encoding,
+        CMS construction and PKIX path validation are all taken from established libraries.
+        Cryptographic code fails through timing side channels, padding oracles and biased
+        nonces — none of which cause a test to fail. An implementation that passes its own
+        tests is not evidence of correctness.
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ==================== PAGE 5 : IMPLEMENTATION ========================= -->
+<section class="page">
+  <div class="sec c1">
+    <h2><span class="num">8</span> Implementation</h2>
+    <div class="body">
+      <h3>Implementation approach</h3>
+      <p>The system is built as a <b>modular monolith</b>: a single deployable process partitioned
+        into feature modules, each with its own <code>api</code>, <code>application</code>,
+        <code>domain</code> and <code>infrastructure</code> layers. Microservices were rejected
+        because the dominant engineering risk is cryptographic correctness rather than horizontal
+        scale, and distribution would place network failures on the signing path without making
+        any of that correctness easier to achieve.</p>
+
+      <h3>Important modules</h3>
+      <table class="data">
+        <tr><th style="width:26%">Module</th><th>Responsibility</th></tr>
+        <tr><td><code>document</code></td><td>Upload validation, SHA-256 hashing, storage, version history</td></tr>
+        <tr><td><code>signature</code></td><td>PAdES signing, CMS assembly, <code>SigningProvider</code> abstraction</td></tr>
+        <tr><td><code>verification</code></td><td>Signature parsing, six independent checks, verdict composition</td></tr>
+        <tr><td><code>certificate</code></td><td>X.509 parsing, PKIX chain building, trust anchors, revocation interface</td></tr>
+        <tr><td><code>audit</code></td><td>Hash-chained tamper-evident event log</td></tr>
+        <tr><td><code>security</code></td><td>JWT authentication, role-based authorisation, rate limiting</td></tr>
+      </table>
+
+      <h3>Key generation</h3>
+      <pre class="light">KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", "BC");
+generator.initialize(2048, secureRandom);          // SecureRandom, never java.util.Random
+KeyPair keys = generator.generateKeyPair();
+
+// Certificate serial: 160 bits of randomness, forced positive.
+// A counter would leak issuance volume and collide across generators.
+BigInteger serial = new BigInteger(160, secureRandom).abs().add(BigInteger.ONE);</pre>
+
+      <h3>Signing process</h3>
+      <pre class="light">PDSignature signature = new PDSignature();
+signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
+signature.setSubFilter(PDSignature.SUBFILTER_ETSI_CADES_DETACHED);   // PAdES
+
+options.setPreferredSignatureSize(16384);      // reserve space for the CMS
+document.addSignature(signature, options);
+
+// Prepare the incremental update; everything except the reserved
+// /Contents gap becomes the signed byte range.
+ExternalSigningSupport externalSigning =
+        document.saveIncrementalForExternalSigning(output);
+
+byte[] contentToSign = externalSigning.getContent().readAllBytes();
+byte[] cms = provider.sign(new SignRequest(contentToSign, "SHA-256", now, ...));
+externalSigning.setSignature(cms);             // written into the gap only</pre>
+
+      <h3>Verification process</h3>
+      <pre class="light">byte[] signedContent = signature.getSignedContent(pdfBytes);  // per /ByteRange
+byte[] cmsBytes      = signature.getContents(pdfBytes);
+
+CMSSignedData cms = new CMSSignedData(
+        new CMSProcessableByteArray(signedContent), cmsBytes);
+
+try {
+    // Verified against the certificate's PUBLIC KEY, not the certificate
+    // object: Bouncy Castle's certificate-based verifier also rejects a
+    // signature whose claimed time falls outside the validity window,
+    // which would conflate "broken signature" with "expired certificate".
+    verified = signerInformation.verify(
+            new JcaSimpleSignerInfoVerifierBuilder()
+                    .setProvider("BC")
+                    .build(signerCertificate.getPublicKey()));
+
+} catch (CMSSignerDigestMismatchException e) {
+    // The digest over the signed range does not match the digest sealed
+    // in the signed attributes: cryptographic proof of modification.
+    digestMismatch = true;
+}</pre>
+
+      <h3>Hash-chained audit log</h3>
+      <p>Each audit record contains the hash of its predecessor, so any retroactive edit,
+        insertion or deletion breaks every subsequent link:</p>
+      <pre class="light">h(0) = 0…0  (genesis)
+h(i) = SHA-256( h(i-1) ‖ canonical(record i) )</pre>
+      <p>The canonical form is <b>length-prefixed</b> — each field encoded as
+        <code>&lt;byteLength&gt;:&lt;value&gt;;</code> — rather than separator-joined. With a plain
+        separator the field pairs <span class="mono">("alice","extra")</span> and
+        <span class="mono">("aliceextra","")</span> serialise identically and therefore hash
+        identically, allowing an adversary who controls part of one field to shift a boundary
+        and rewrite a record while preserving its hash.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ==================== PAGE 6 : WORKING / OUTPUT ======================= -->
+<section class="page">
+  <div class="sec c2">
+    <h2><span class="num">9</span> Working / Output</h2>
+    <div class="body">
+      <p>The demonstration sequence establishes a baseline of authenticity and then destroys it
+        with a minimal, realistic alteration.</p>
+
+      <div class="grid2">
+        <div>
+          <div class="shot">[ Screenshot ]<span class="cap">Figure 1 — Upload: SHA-256 digest computed on arrival</span></div>
+        </div>
+        <div>
+          <div class="shot">[ Screenshot ]<span class="cap">Figure 2 — Signing: signer, issuer, serial, PAdES-B-B</span></div>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <div>
+          <div class="shot">[ Screenshot ]<span class="cap">Figure 3 — Verification of unaltered document: AUTHENTIC</span></div>
+        </div>
+        <div>
+          <div class="shot">[ Screenshot ]<span class="cap">Figure 4 — Verification after alteration: TAMPERING DETECTED</span></div>
+        </div>
+      </div>
+
+      <h3>Observed output — unaltered signed document</h3>
+      <pre>Verdict     : VALID
+Headline    : Authentic document
+Integrity   : INTACT
+Signature   : VALID
+Certificate : VALID
+Chain       : TRUSTED
+Revocation  : NOT_CHECKED          &lt;-- reported honestly, not assumed good
+Timestamp   : NOT_AVAILABLE        &lt;-- reported honestly, not assumed valid
+ByteRange   : [0, 1610, 34380, 779]</pre>
+
+      <h3>Observed output — after altering the salary figure</h3>
+      <pre>Changed 'INR 800,000' to 'INR 900,000' at byte offset 448
+File size is unchanged: 35159 bytes
+
+Verdict     : TAMPERED
+Headline    : Tampering detected
+Integrity   : MODIFIED
+Signature   : INVALID
+Certificate : VALID                &lt;-- the certificate did not change
+Chain       : TRUSTED              &lt;-- the document changed
+Class       : SIGNED_CONTENT_CHANGED
+Proven      : True</pre>
+
+      <div class="callout ok">
+        <b>The critical observation.</b> The substitution preserves file length, so every byte
+        offset remains valid and the tampered file is still a structurally well-formed PDF that
+        opens normally in any reader. It fails verification solely because the bytes covered by
+        the signature are no longer the bytes that were signed. Note further that the certificate
+        and its chain remain <b>VALID</b> and <b>TRUSTED</b> — reporting them as invalid would
+        direct an investigator toward the signer's credentials when the actual fault is an edited
+        document.
+      </div>
+
+      <h3>Byte range interpretation</h3>
+      <p>The value <span class="mono">[0, 1610, 34380, 779]</span> states that the signature
+        protects bytes 0–1609 and bytes 34380–35158. The intervening region holds the signature
+        itself and is necessarily excluded, since a signature cannot cover its own value. Total
+        protected content is 2389 bytes of a 35159-byte file; the remainder is the CMS structure.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ================== PAGE 7 : RESULTS & ANALYSIS ======================= -->
+<section class="page">
+  <div class="sec c3">
+    <h2><span class="num">10</span> Results &amp; Analysis</h2>
+    <div class="body">
+      <h3>Adversarial test results</h3>
+      <p>Twelve scenarios construct hostile artefacts and pass them through the production
+        verification path. The table below is emitted by the test suite itself from observed
+        outcomes; it is not a transcribed summary.</p>
+
+      <table class="data">
+        <tr><th style="width:5%">#</th><th style="width:34%">Test case / attack</th>
+            <th style="width:22%">Expected</th><th>Observed result</th></tr>
+        <tr><td>1</td><td>Legitimately signed document</td><td>Accept</td><td><b>PASS</b> — verdict VALID</td></tr>
+        <tr><td>2</td><td>Modified signed content</td><td>Reject</td><td><b>DETECTED</b> — TAMPERED, digest mismatch</td></tr>
+        <tr><td>3</td><td>Corrupted signature bytes</td><td>Reject</td><td><b>DETECTED</b> — CMS unparseable</td></tr>
+        <tr><td>4</td><td>Untrusted (self-signed) certificate</td><td>Amber</td><td><b>DETECTED</b> — VALID_UNTRUSTED</td></tr>
+        <tr><td>5</td><td>Expired certificate</td><td>Flag</td><td><b>DETECTED</b> — status EXPIRED, chain still TRUSTED</td></tr>
+        <tr><td>6</td><td>Certificate not yet valid</td><td>Flag</td><td><b>DETECTED</b> — status NOT_YET_VALID</td></tr>
+        <tr><td>7</td><td>Signature by a non-matching key</td><td>Reject</td><td><b>DETECTED</b> — INVALID, integrity INTACT</td></tr>
+        <tr><td>8</td><td>Unsigned document submitted</td><td>Report</td><td><b>DETECTED</b> — verdict UNSIGNED</td></tr>
+        <tr><td>9</td><td>Malformed / non-PDF file</td><td>Report</td><td><b>DETECTED</b> — verdict ERROR</td></tr>
+        <tr><td>10</td><td>Page appended by full rewrite</td><td>Reject</td><td><b>DETECTED</b> — signed bytes altered</td></tr>
+        <tr><td>11</td><td>Second signature added</td><td>Both valid</td><td><b>PASS</b> — 2 valid signatures preserved</td></tr>
+        <tr><td>12</td><td>Post-signature incremental update</td><td>Surface, not condemn</td><td><b>PASS</b> — classified, marked not proven tampering</td></tr>
+      </table>
+
+      <h3>Test suite summary</h3>
+      <table class="data">
+        <tr><th>Suite</th><th style="width:14%">Tests</th><th style="width:14%">Result</th><th>Coverage focus</th></tr>
+        <tr><td>SignAndVerifyTest</td><td>10</td><td>Pass</td><td>Sign, verify, tamper, unsigned, malformed</td></tr>
+        <tr><td>DigitalSignatureAttackSuiteTest</td><td>12</td><td>Pass</td><td>Adversarial scenarios above</td></tr>
+        <tr><td>AuthorizationTest</td><td>12</td><td>Pass</td><td>Privilege escalation attempts, 401 vs 403</td></tr>
+        <tr><td>AuditIntegrityServiceTest</td><td>9</td><td>Pass</td><td>Edit, delete, insert, re-link detection</td></tr>
+        <tr><td>AuditChainPersistenceTest</td><td>2</td><td>Pass</td><td>Chain survives a database round trip</td></tr>
+        <tr><td>RateLimiterTest</td><td>6</td><td>Pass</td><td>Token bucket, key isolation, refill</td></tr>
+        <tr><td>VisibleSignatureTest</td><td>5</td><td>Pass</td><td>Appearance does not weaken signing</td></tr>
+        <tr><td>TimestampHonestyTest</td><td>4</td><td>Pass</td><td>Absence never rendered as valid</td></tr>
+        <tr><td>Frontend (Vitest)</td><td>23</td><td>Pass</td><td>Status rendering, accessibility labels</td></tr>
+        <tr style="background:#eef2f7"><td><b>Total</b></td><td><b>83</b></td><td><b>83 pass, 0 fail</b></td><td></td></tr>
+      </table>
+
+      <h3>Measured size characteristics</h3>
+      <table class="data">
+        <tr><th>Observation</th><th style="width:20%">Value</th><th>Interpretation</th></tr>
+        <tr><td>Original document</td><td>1,262 bytes</td><td>Single-page employment contract</td></tr>
+        <tr><td>Signed document</td><td>35,159 bytes</td><td>Includes reserved CMS region</td></tr>
+        <tr><td>Signature overhead</td><td>≈ 33.9 KB</td><td>Reserved space (16 KB) plus certificate chain and structure</td></tr>
+        <tr><td>Protected byte count</td><td>2,389 bytes</td><td>Sum of the two <code>/ByteRange</code> spans</td></tr>
+        <tr><td>Tampered file size</td><td>35,159 bytes</td><td><b>Identical</b> — length-preserving substitution</td></tr>
+        <tr><td>Digest length</td><td>256 bits</td><td>Constant regardless of document size</td></tr>
+      </table>
+
+      <h3>Insights from results</h3>
+      <ul>
+        <li><b>Detection is size-independent.</b> SHA-256 produces a fixed 256-bit output for any
+          input, so verification cost is dominated by one RSA operation and does not scale with
+          document length.</li>
+        <li><b>Signature overhead is constant, not proportional.</b> The CMS structure grows with
+          the certificate chain, not with the document — so relative overhead falls sharply as
+          document size increases.</li>
+        <li><b>A length-preserving edit is undetectable by inspection but trivially detected
+          cryptographically.</b> This is the central empirical finding of the project.</li>
+        <li><b>Independent reporting has diagnostic value.</b> Scenario 7 (wrong key) produced
+          <code>signature = INVALID</code> with <code>integrity = INTACT</code>, correctly
+          distinguishing an impersonation attempt from a content edit — a distinction a single
+          boolean verdict would destroy.</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<!-- ==================== PAGE 8 : SECURITY ANALYSIS ====================== -->
+<section class="page">
+  <div class="sec c4">
+    <h2><span class="num">11</span> Security Analysis</h2>
+    <div class="body">
+      <h3>Security properties achieved</h3>
+      <table class="data">
+        <tr><th style="width:20%">Property</th><th style="width:12%">Status</th><th>Mechanism and evidence</th></tr>
+        <tr><td><b>Confidentiality</b></td><td>Not provided<br>(by design)</td>
+          <td>Signed documents remain readable. The objective is authenticity, not secrecy; a
+            contract that could not be read would be useless. Transport confidentiality is TLS's
+            responsibility.</td></tr>
+        <tr><td><b>Integrity</b></td><td>Achieved</td>
+          <td>SHA-256 digest over the signature's byte range, compared against the sealed
+            <code>messageDigest</code> attribute. Verified by scenarios 2 and 10.</td></tr>
+        <tr><td><b>Authentication</b></td><td>Achieved</td>
+          <td>CMS signature verified against the public key of the embedded X.509 certificate;
+            <code>signingCertificateV2</code> binds the signature to one specific certificate.</td></tr>
+        <tr><td><b>Non-repudiation</b></td><td>Partial</td>
+          <td><code>nonRepudiation</code> key usage asserted and all actions audited. Weakened by
+            file-based key storage and the absence of a trusted timestamp — stated candidly below.</td></tr>
+        <tr><td><b>Key management</b></td><td>Development grade</td>
+          <td>PKCS #12 keystore with externalised password; <code>SigningProvider</code> abstraction
+            never exposes a <code>PrivateKey</code>, so HSM and KMS backends remain implementable.</td></tr>
+      </table>
+
+      <h3>Threats considered (STRIDE)</h3>
+      <table class="data">
+        <tr><th style="width:17%">Category</th><th style="width:36%">Threat</th><th>Mitigation implemented</th></tr>
+        <tr><td><b>Spoofing</b></td><td>Adversary forges a document with a self-made certificate</td>
+          <td>Trust derived only from externally configured anchors; embedded chains treated as
+            unverified claims. Result is amber, never green.</td></tr>
+        <tr><td><b>Tampering</b></td><td>Signed PDF is edited after signing</td>
+          <td>Digest over <code>/ByteRange</code>; mismatch is mathematical proof of alteration.</td></tr>
+        <tr><td><b>Repudiation</b></td><td>Signer denies having signed</td>
+          <td>Certificate-bound identity plus hash-chained audit log recording actor and time.</td></tr>
+        <tr><td><b>Information disclosure</b></td><td>One user reads another's documents</td>
+          <td>Ownership-scoped queries; "not found" and "not yours" return an identical error so
+            identifiers cannot be enumerated.</td></tr>
+        <tr><td><b>Denial of service</b></td><td>Oversized uploads or unbounded signing requests</td>
+          <td>Upload size limits at two layers, streaming hash computation, and token-bucket rate
+            limiting keyed per address and per account.</td></tr>
+        <tr><td><b>Elevation of privilege</b></td><td>Ordinary user performs administrative action</td>
+          <td>Role-based access control enforced server-side, verified by 12 tests that attempt
+            the escalation rather than assert the configuration.</td></tr>
+      </table>
+
+      <h3>Limitations — stated explicitly</h3>
+      <div class="callout warn">
+        A security tool that overstates its guarantees is more dangerous than one that does less,
+        because users calibrate their trust to the claim rather than the reality.
+      </div>
+      <ul>
+        <li><b>Time of signing cannot be proven.</b> No RFC 3161 timestamp authority is integrated.
+          The signer's claimed signing time is an unverified assertion, and the interface reports
+          timestamp status as <code>NOT_AVAILABLE</code> rather than implying otherwise.</li>
+        <li><b>Revocation is not checked.</b> The <code>RevocationService</code> interface exists,
+          but only a disabled implementation is provided. Status reports
+          <code>NOT_CHECKED</code> — never <code>GOOD</code>.</li>
+        <li><b>The audit log is tamper-evident, not tamper-proof.</b> An adversary with unrestricted
+          database write access can recompute the chain from the point of edit onward and leave it
+          internally consistent. Closing this requires publishing chain heads to independent
+          storage.</li>
+        <li><b>The signing key resides in a file.</b> It can therefore be copied, which materially
+          weakens any non-repudiation claim. Production deployment should hold the key inside an
+          HSM or cloud KMS from which it cannot be exported.</li>
+        <li><b>Trust in a certificate authority is assumed.</b> If a configured CA mis-issues a
+          certificate, the result is reported as trusted. This is inherent to PKI rather than a
+          defect of this implementation.</li>
+        <li><b>A valid signature does not imply truthful content.</b> It establishes only that the
+          document is unchanged since an identified party signed it.</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<!-- =============== PAGE 9 : CONCLUSION + FUTURE SCOPE =================== -->
+<section class="page">
+  <div class="sec c5">
+    <h2><span class="num">12</span> Conclusion</h2>
+    <div class="body">
+      <h3>Key findings</h3>
+      <ul>
+        <li><b>Cryptographic integrity verification is decisive where visual inspection is
+          useless.</b> A length-preserving single-figure alteration produced a file
+          indistinguishable from the original to a human reader and to a PDF viewer, yet was
+          detected with certainty by digest comparison over the signed byte range.</li>
+        <li><b>Separating independent checks preserves diagnostic information.</b> Reporting
+          integrity, signature validity, certificate status, chain trust, revocation and timestamp
+          as six distinct results allowed a tampered document to be correctly described as having
+          modified content <i>and</i> a valid certificate — a distinction that a single boolean
+          verdict necessarily loses.</li>
+        <li><b>Honest reporting of uncertainty is an implementable engineering property.</b>
+          By modelling "not checked" and "not available" as first-class states in the domain model,
+          the API contract and the frontend type system, absence of evidence is structurally
+          prevented from being rendered as evidence of safety.</li>
+        <li><b>Trust must originate outside the artefact being verified.</b> Validating a signature
+          against the certificate chain embedded in the same document is circular; the design
+          therefore derives trust exclusively from externally configured anchors.</li>
+      </ul>
+
+      <h3>How the objectives were achieved</h3>
+      <table class="data">
+        <tr><th style="width:32%">Objective</th><th style="width:14%">Status</th><th>Evidence</th></tr>
+        <tr><td>1 — Genuine digital signatures</td><td><b>Achieved</b></td>
+          <td>PAdES-B-B signatures produced with subfilter <code>ETSI.CAdES.detached</code>;
+            externally verifiable.</td></tr>
+        <tr><td>2 — Detect modification</td><td><b>Achieved</b></td>
+          <td>Scenarios 2 and 10 detected; finding labelled cryptographically proven.</td></tr>
+        <tr><td>3 — Evaluate identity and trust</td><td><b>Achieved</b></td>
+          <td>PKIX path validation to configured anchors; scenarios 4–7 correctly classified.</td></tr>
+        <tr><td>4 — Report uncertainty honestly</td><td><b>Achieved</b></td>
+          <td>Timestamp and revocation report unavailable/unchecked; enforced by dedicated tests.</td></tr>
+      </table>
+
+      <h3>Overall outcome</h3>
+      <p>The project delivers a working platform of 83 passing automated tests across signing,
+        verification, authorisation, audit integrity and adversarial security scenarios. It
+        demonstrates that the difference between a trustworthy and an untrustworthy document is
+        not a matter of appearance but of arithmetic — and, equally, that a system's credibility
+        depends on declaring what it has <i>not</i> verified as clearly as what it has.</p>
+    </div>
+  </div>
+
+  <div class="sec c6">
+    <h2><span class="num">13</span> Future Scope</h2>
+    <div class="body">
+      <table class="data">
+        <tr><th style="width:28%">Enhancement</th><th style="width:12%">Priority</th><th>Rationale and approach</th></tr>
+        <tr><td><b>RFC 3161 timestamping</b></td><td>High</td>
+          <td>Integrate a Timestamp Authority to advance from PAdES B-B to B-T, establishing
+            provable signing time and preserving validity beyond certificate expiry.</td></tr>
+        <tr><td><b>OCSP / CRL revocation</b></td><td>High</td>
+          <td>Implement the existing <code>RevocationService</code> interface so status can report
+            <code>GOOD</code> on genuine evidence rather than <code>NOT_CHECKED</code>.</td></tr>
+        <tr><td><b>HSM / Cloud KMS custody</b></td><td>High</td>
+          <td>Implement <code>SigningProvider</code> against PKCS #11 or AWS KMS so the private key
+            never leaves a hardware boundary, materially strengthening non-repudiation.</td></tr>
+        <tr><td><b>Long-term validation (B-LT / B-LTA)</b></td><td>Medium</td>
+          <td>Embed revocation data and archival timestamps so signatures remain verifiable decades
+            after issuance.</td></tr>
+        <tr><td><b>External audit anchoring</b></td><td>Medium</td>
+          <td>Publish periodic chain-head digests to independent storage, upgrading the log from
+            tamper-evident toward tamper-resistant.</td></tr>
+        <tr><td><b>Multi-party signing workflows</b></td><td>Medium</td>
+          <td>Sequential approval routing (employee → manager → HR) with notification, building on
+            existing multi-signature support.</td></tr>
+        <tr><td><b>Post-quantum readiness</b></td><td>Long term</td>
+          <td>Evaluate ML-DSA (FIPS 204) as RSA and ECDSA become vulnerable to Shor's algorithm on
+            a sufficiently large quantum computer.</td></tr>
+        <tr><td><b>Licensed eSign integration</b></td><td>Long term</td>
+          <td>Integrate an authorised certifying authority to achieve legal recognition under
+            applicable jurisdiction-specific regulation.</td></tr>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================== PAGE 10 : REFERENCES =========================== -->
+<section class="page">
+  <div class="sec c7">
+    <h2><span class="num">14</span> References</h2>
+    <div class="body">
+      <h3>Standards and specifications</h3>
+      <div class="ref">[1] National Institute of Standards and Technology, <i>FIPS PUB 180-4:
+        Secure Hash Standard (SHS)</i>, August 2015.</div>
+      <div class="ref">[2] National Institute of Standards and Technology, <i>FIPS PUB 186-5:
+        Digital Signature Standard (DSS)</i>, February 2023.</div>
+      <div class="ref">[3] Moriarty, K. et al., <i>RFC 8017: PKCS #1 — RSA Cryptography
+        Specifications Version 2.2</i>, IETF, November 2016.</div>
+      <div class="ref">[4] Housley, R., <i>RFC 5652: Cryptographic Message Syntax (CMS)</i>,
+        IETF, September 2009.</div>
+      <div class="ref">[5] Cooper, D. et al., <i>RFC 5280: Internet X.509 Public Key
+        Infrastructure Certificate and Certificate Revocation List (CRL) Profile</i>, IETF,
+        May 2008.</div>
+      <div class="ref">[6] Schaad, J., <i>RFC 5035: Enhanced Security Services (ESS) Update —
+        Adding CertID Algorithm Agility</i>, IETF, August 2007.</div>
+      <div class="ref">[7] Adams, C. et al., <i>RFC 3161: Internet X.509 Public Key
+        Infrastructure Time-Stamp Protocol (TSP)</i>, IETF, August 2001.</div>
+      <div class="ref">[8] European Telecommunications Standards Institute, <i>ETSI EN 319 142-1:
+        PAdES digital signatures — Building blocks and PAdES baseline signatures</i>, 2016.</div>
+      <div class="ref">[9] International Organization for Standardization, <i>ISO 32000-2:2020 —
+        Document management: Portable Document Format, Part 2 (PDF 2.0)</i>.</div>
+      <div class="ref">[10] Santesson, S. et al., <i>RFC 6960: X.509 Internet PKI Online
+        Certificate Status Protocol (OCSP)</i>, IETF, June 2013.</div>
+      <div class="ref">[11] Pornin, T., <i>RFC 6979: Deterministic Usage of the Digital Signature
+        Algorithm (DSA) and Elliptic Curve Digital Signature Algorithm (ECDSA)</i>, IETF, 2013.</div>
+
+      <h3>Books and papers</h3>
+      <div class="ref">[12] Ferguson, N., Schneier, B. and Kohno, T., <i>Cryptography Engineering:
+        Design Principles and Practical Applications</i>, Wiley, 2010.</div>
+      <div class="ref">[13] Katz, J. and Lindell, Y., <i>Introduction to Modern Cryptography</i>,
+        3rd edition, CRC Press, 2020.</div>
+      <div class="ref">[14] Menezes, A., van Oorschot, P. and Vanstone, S., <i>Handbook of Applied
+        Cryptography</i>, CRC Press, 1996.</div>
+      <div class="ref">[15] Stevens, M. et al., “The first collision for full SHA-1”,
+        <i>CRYPTO 2017</i>, Lecture Notes in Computer Science, vol. 10401, Springer, 2017.</div>
+      <div class="ref">[16] Boneh, D., DeMillo, R. and Lipton, R., “On the Importance of Checking
+        Cryptographic Protocols for Faults”, <i>EUROCRYPT 1997</i>.</div>
+      <div class="ref">[17] Rivest, R., Shamir, A. and Adleman, L., “A Method for Obtaining Digital
+        Signatures and Public-Key Cryptosystems”, <i>Communications of the ACM</i>, 21(2), 1978.</div>
+
+      <h3>Software documentation</h3>
+      <div class="ref">[18] The Legion of the Bouncy Castle, <i>Bouncy Castle Cryptography APIs
+        for Java</i>, version 1.80. https://www.bouncycastle.org/documentation.html</div>
+      <div class="ref">[19] The Apache Software Foundation, <i>Apache PDFBox — Java PDF Library</i>,
+        version 3.0.7. https://pdfbox.apache.org/</div>
+      <div class="ref">[20] Oracle Corporation, <i>Java Cryptography Architecture (JCA) Reference
+        Guide</i>, Java SE 21. https://docs.oracle.com/en/java/javase/21/security/</div>
+      <div class="ref">[21] VMware Tanzu, <i>Spring Security Reference Documentation</i>,
+        version 6.x. https://docs.spring.io/spring-security/reference/</div>
+      <div class="ref">[22] Provos, N. and Mazières, D., “A Future-Adaptable Password Scheme”,
+        <i>USENIX Annual Technical Conference</i>, 1999. (bcrypt)</div>
+
+      <h3>Project artefacts</h3>
+      <div class="ref">[23] Project source repository and documentation —
+        <span class="mono">https://github.com/aanyaarney/docutrust</span></div>
+      <div class="ref">[24] <i>DocuTrust — Cryptographic Mathematics</i>, project documentation,
+        <span class="mono">docs/CRYPTOGRAPHIC_MATHEMATICS.md</span></div>
+      <div class="ref">[25] <i>DocuTrust — STRIDE Threat Model</i>, project documentation,
+        <span class="mono">docs/THREAT_MODEL.md</span></div>
+      <div class="ref">[26] <i>DocuTrust — Architecture Decision Records</i> (ADR-001 to ADR-007),
+        <span class="mono">docs/ADR/</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px; text-align:center; font-size:9pt; color:#6b7687;
+              border-top:1px solid #d5dbe4; padding-top:12px;">
+    <div style="font-style:italic; font-size:10pt; color:#17325c; margin-bottom:6px;">
+      “Security is not a product, but a process.”</div>
+    Department of <span style="border-bottom:1px dotted #8b95a5; display:inline-block; min-width:170px;">&nbsp;</span>
+    &nbsp;·&nbsp; Academic Year 2026 – 27
+  </div>
+
+</section>
+
+</body>
+</html>

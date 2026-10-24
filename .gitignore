@@ -96,3 +96,9 @@ failsafe-reports/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Derived / generated artefacts
+/backend-source-code.md
+/frontend-source-code.md
+/report/*.pdf
+/report/*.bak.html
